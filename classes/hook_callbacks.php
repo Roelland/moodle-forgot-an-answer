@@ -31,10 +31,19 @@ class hook_callbacks {
      * Returns the inline script that intercepts the Next button and validates answers.
      */
     private static function render_script(): string {
+        $str = json_encode([
+            'title'    => get_string('modal_title',         'local_forgotananswer'),
+            'single'   => get_string('modal_body_single',   'local_forgotananswer'),
+            'multiple' => get_string('modal_body_multiple', 'local_forgotananswer'),
+            'question' => get_string('modal_question',      'local_forgotananswer'),
+            'ok'       => get_string('modal_ok',            'local_forgotananswer'),
+        ], JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT);
+
         return <<<HTML
         <script>
         (function () {
             'use strict';
+            var STR = $str;
 
             /**
              * Decide whether a single .que block has been answered.
@@ -147,12 +156,12 @@ class hook_callbacks {
 
             function formatList(missed) {
                 if (missed.length === 1) {
-                    return 'question ' + missed[0];
+                    return STR.question + ' ' + missed[0];
                 }
                 if (missed.length === 2) {
-                    return 'question ' + missed[0] + ' &amp; ' + missed[1];
+                    return STR.question + ' ' + missed[0] + ' &amp; ' + missed[1];
                 }
-                return 'question ' + missed.slice(0, -1).join(', ') + ', &amp; ' + missed[missed.length - 1];
+                return STR.question + ' ' + missed.slice(0, -1).join(', ') + ', &amp; ' + missed[missed.length - 1];
             }
 
             function showModal(missed) {
@@ -162,10 +171,8 @@ class hook_callbacks {
                 }
 
                 var isSingle = missed.length === 1;
-                var title = 'Woops, you forgot an answer.';
-                var body = isSingle
-                    ? 'We didn\'t register an answer in ' + formatList(missed)
-                    : 'We didn\'t register answers in ' + formatList(missed);
+                var title = STR.title;
+                var body = (isSingle ? STR.single : STR.multiple) + ' ' + formatList(missed);
 
                 var overlay = document.createElement('div');
                 overlay.id = 'faa-overlay';
@@ -186,7 +193,7 @@ class hook_callbacks {
                     '<p style="color:#555;margin-bottom:1.5rem;">' +
                         body +
                     '</p>' +
-                    '<button id="faa-ok" class="btn btn-primary px-4">OK</button>';
+                    '<button id="faa-ok" class="btn btn-primary px-4">' + STR.ok + '</button>';
 
                 overlay.appendChild(box);
                 document.body.appendChild(overlay);
