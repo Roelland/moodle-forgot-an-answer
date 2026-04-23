@@ -27,16 +27,30 @@ class hook_callbacks {
         // Role filter: only inject for users who hold one of the configured roles.
         // No roles configured = popup is disabled for everyone.
         $enabledroles = get_config('local_forgotananswer', 'enabled_roles');
-        $roleids      = !empty($enabledroles) ? array_filter(explode(',', $enabledroles)) : [];
+        $roleids      = !empty($enabledroles)
+            ? array_map('intval', array_filter(explode(',', $enabledroles)))
+            : [];
 
         if (empty($roleids)) {
             return;
         }
 
-        // get_user_roles with $checkparentcontexts=true walks up to system context,
-        // so a teacher enrolled at course level is still found here.
+        // Collect the user's real role assignments (walks up to system context).
         $userroles   = get_user_roles($PAGE->context, $USER->id, true);
-        $userroleids = array_column($userroles, 'roleid');
+        $userroleids = array_map('intval', array_column($userroles, 'roleid'));
+
+        // Also honour "Switch role to" — Moodle stores the active switched role in
+        // $USER->access['rsw'][$context->path]. The switch is applied at course level,
+        // so its path is a prefix of the current (module) context path.
+        if (!empty($USER->access['rsw'])) {
+            foreach ($USER->access['rsw'] as $path => $switchedroleid) {
+                if (strpos($PAGE->context->path, $path) === 0) {
+                    $userroleids[] = (int) $switchedroleid;
+                    break;
+                }
+            }
+        }
+
         if (empty(array_intersect($userroleids, $roleids))) {
             return;
         }
