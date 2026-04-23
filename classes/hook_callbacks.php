@@ -17,11 +17,26 @@ class hook_callbacks {
     public static function before_footer_html_generation(
         \core\hook\output\before_footer_html_generation $hook
     ): void {
-        global $PAGE;
+        global $PAGE, $USER;
 
         // Only inject on quiz attempt pages.
         if ($PAGE->pagetype !== 'mod-quiz-attempt') {
             return;
+        }
+
+        // Role filter: if any roles are configured, only inject for users who hold one of them.
+        $enabledroles = get_config('local_forgotananswer', 'enabled_roles');
+        if (!empty($enabledroles)) {
+            $roleids = array_filter(explode(',', $enabledroles));
+            if (!empty($roleids)) {
+                // get_user_roles with $checkparentcontexts=true walks up to system context,
+                // so a teacher enrolled at course level is still found here.
+                $userroles    = get_user_roles($PAGE->context, $USER->id, true);
+                $userroleids  = array_column($userroles, 'roleid');
+                if (empty(array_intersect($userroleids, $roleids))) {
+                    return;
+                }
+            }
         }
 
         $hook->add_html(self::render_script());
