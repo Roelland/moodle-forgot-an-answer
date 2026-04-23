@@ -7,7 +7,7 @@ $string['pluginname']              = 'Forgot an Answer';
 $string['settings_heading']        = 'Popup visibility';
 $string['settings_heading_desc']   = 'Control which roles see the "forgot an answer" popup during quiz attempts.';
 $string['setting_enabled_roles']   = 'Show popup for roles';
-$string['setting_enabled_roles_desc'] = 'Tick every role that should see the popup. If no roles are ticked, the popup is shown to everyone.';
+$string['setting_enabled_roles_desc'] = 'Tick every role that should see the popup. If no roles are ticked, the popup is not shown to anyone.';
 
 // Modal strings (injected into JavaScript).
 $string['modal_title']             = 'Woops, you forgot an answer.';

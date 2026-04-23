@@ -7,7 +7,7 @@ $string['pluginname']              = 'Antwoord vergeten';
 $string['settings_heading']        = 'Popup zichtbaarheid';
 $string['settings_heading_desc']   = 'Bepaal welke rollen de popup "antwoord vergeten" zien tijdens quizpogingen.';
 $string['setting_enabled_roles']   = 'Toon popup voor rollen';
-$string['setting_enabled_roles_desc'] = 'Vink elke rol aan die de popup moet zien. Als er geen rollen zijn aangevinkt, wordt de popup aan iedereen getoond.';
+$string['setting_enabled_roles_desc'] = 'Vink elke rol aan die de popup moet zien. Als er geen rollen zijn aangevinkt, wordt de popup aan niemand getoond.';
 
 // Popup-teksten (worden in JavaScript geladen).
 $string['modal_title']             = 'Oeps, je bent een antwoord vergeten.';
